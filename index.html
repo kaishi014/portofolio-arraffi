@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portofolio Interaktif | Arraffi Ardhiansyah</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- RESET & VARIABLES --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --accent-hover: #0284c7;
+            --text-color: #f8fafc;
+            --text-secondary: #94a3b8;
+            --modal-bg: #1e293b;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- NAVBAR --- */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 20px 8%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 25px;
+        }
+
+        .nav-links a {
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-color);
+        }
+
+        /* --- HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 100px 20px 50px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+        }
+
+        .hero-content h3 {
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            max-width: 650px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent-color);
+            color: #0f172a;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: 0.3s ease;
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(56, 189, 248, 0.5);
+            color: #fff;
+        }
+
+        /* --- GENERAL SECTIONS --- */
+        section {
+            padding: 80px 8%;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.2rem;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            width: 60px;
+            height: 4px;
+            background-color: var(--accent-color);
+            display: block;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- ORGANISASI & SKILLS GRID --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-color);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        /* KARTU PROYEK BISA DIKLIK */
+        .clickable-card {
+            cursor: pointer;
+        }
+
+        .clickable-card .card-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent-color);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .clickable-card .click-hint {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 15px;
+            color: var(--accent-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .card i.main-icon {
+            font-size: 2.2rem;
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            font-size: 1.25rem;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* --- TAGS ORGANISASI --- */
+        .org-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .tag {
+            background-color: var(--card-bg);
+            padding: 10px 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            font-weight: 500;
+            transition: 0.3s;
+        }
+
+        .tag:hover {
+            background-color: var(--accent-color);
+            color: #0f172a;
+            transform: scale(1.05);
+        }
+
+        /* --- SOSIAL MEDIA SECTION --- */
+        .social-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 25px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: 0.3s ease;
+        }
+
+        .social-btn.instagram:hover { background-color: #e1306c; color: #fff; }
+        .social-btn.discord:hover { background-color: #5865f2; color: #fff; }
+        .social-btn.whatsapp:hover { background-color: #25d366; color: #fff; }
+        .social-btn.youtube:hover { background-color: #ff0000; color: #fff; }
+
+        .social-btn:hover {
+            transform: translateY(-5px);
+        }
+
+        /* --- MODAL POPUP (DESAIN INTERAKTIF) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-container {
+            background-color: var(--modal-bg);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 20px;
+            max-width: 650px;
+            width: 100%;
+            padding: 35px;
+            position: relative;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+        }
+
+        .modal-title h3 {
+            font-size: 1.6rem;
+            color: #fff;
+        }
+
+        .modal-title span {
+            font-size: 0.85rem;
+            color: var(--accent-color);
+            background: rgba(56, 189, 248, 0.1);
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        .modal-body p {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        .modal-features-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .modal-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .modal-features li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .modal-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .tech-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .tech-tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            color: var(--accent-color);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 15px;
+        }
+
+        /* --- FOOTER --- */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #0b1120;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* --- ANIMASI SCROLL --- */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.3rem; }
+            .nav-links { display: none; }
+            .modal-container { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">Arraffi.</div>
+        <ul class="nav-links">
+            <li><a href="#about">Tentang</a></li>
+            <li><a href="#organization">Organisasi</a></li>
+            <li><a href="#skills">Keahlian</a></li>
+            <li><a href="#projects">Proyek & Presentasi</a></li>
+            <li><a href="#socials">Kontak</a></li>
+        </ul>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="hero-content reveal">
+            <h3>Halo semua, saya</h3>
+            <h1>Arraffi Ardhiansyah</h1>
+            <p>Pelajar aktif, eksplorer hal baru, serta antusias di bidang Kepemimpinan, Public Speaking, AI, dan Web Development.</p>
+            <a href="#projects" class="btn">Lihat Proyek & Presentasi</a>
+        </div>
+    </section>
+
+    <!-- TENTANG SAYA -->
+    <section id="about">
+        <h2 class="section-title reveal">Tentang Saya</h2>
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;" class="reveal">
+            <p style="font-size: 1.1rem; color: var(--text-secondary);">
+                Saya adalah seorang pelajar yang selalu semangat untuk mengeksplorasi hal-hal baru. Saya dikenal ramah dan mudah berbaur dengan banyak orang. Bagi saya, belajar adalah proses tanpa batas—mulai dari aktif di berbagai kegiatan organisasi sekolah hingga mendalami dunia pemrograman dan kecerdasan buatan (AI).
+            </p>
+        </div>
+    </section>
+
+    <!-- ORGANISASI & PENGALAMAN -->
+    <section id="organization">
+        <h2 class="section-title reveal">Pengalaman & Organisasi</h2>
+        <div class="org-tags reveal">
+            <span class="tag"><i class="fa-solid fa-star"></i>Pengurus OSIS (2024-2025)</span>
+            <span class="tag">Pramuka</span>
+            <span class="tag">Adiwiyata</span>
+            <span class="tag">Marching Band</span>
+            <span class="tag">Pencak Silat</span>
+            <span class="tag">Badminton</span>
+            <span class="tag">Rohis</span>
+            <span class="tag">KIR (Karya Ilmiah Remaja)</span>
+        </div>
+    </section>
+
+    <!-- KEAHLIAN -->
+    <section id="skills">
+        <h2 class="section-title reveal">Keahlian & Minat</h2>
+        <div class="grid-container">
+            <div class="card reveal">
+                <i class="fa-solid fa-robot main-icon"></i>
+                <h3>Penggunaan AI</h3>
+                <p>Mampu memanfaatkan teknologi AI secara maksimal, produktif, dan bijak untuk membantu berbagai aktivitas belajar dan proyek.</p>
+            </div>
+            <div class="card reveal">
+                <i class="fa-solid fa-comments main-icon"></i>
+                <h3>Public Speaking</h3>
+                <p>Memiliki kemampuan komunikasi yang baik di depan umum, memimpin forum, dan menyampaikan gagasan secara percaya diri.</p>
+            </div>
+            <div class="card reveal">
+                <i class="fa-solid fa-brain main-icon"></i>
+                <h3>Pemahaman Psikologi</h3>
+                <p>Tertarik memahami dinamika perilaku manusia dan interaksi sosial untuk membangun komunikasi positif.</p>
+            </div>
+            <div class="card reveal">
+                <i class="fa-solid fa-code main-icon"></i>
+                <h3>Coding & Web Dev</h3>
+                <p>Sedang aktif mempelajari fondasi pengembangan web (HTML, CSS, JavaScript) serta bahasa pemrograman Python.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- PROYEK & PRESENTASI INTERAKTIF -->
+    <section id="projects">
+        <h2 class="section-title reveal">Proyek & Presentasi</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-top: -30px; margin-bottom: 40px;" class="reveal">
+            Klik pada salah satu kartu di bawah ini untuk melihat detail proyek / materi presentasi!
+        </p>
+
+        <div class="grid-container">
+            <!-- PROYEK 1 
+            <div class="card clickable-card reveal" onclick="openModal('jepang')">
+                <span class="card-badge">Web App</span>
+                <i class="fa-solid fa-language main-icon"></i>
+                <h3>Web Belajar Bahasa Jepang</h3>
+                <p>Website interaktif untuk membantu pelajar memahami tata bahasa & kosakata dasar Jepang.</p>
+                <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Klik untuk detail</div>
+            </div> -->
+<div class="grid-container">
+    <!-- PROYEK 1 (Seluruh Kartu Adalah Link) -->
+    <a href="web-jepang/index.html" target="_blank" class="card clickable-card reveal" style="text-decoration: none;">
+        <span class="card-badge">Web App</span>
+        <i class="fa-solid fa-language main-icon"></i>
+        <h3>Web Belajar Bahasa Jepang</h3>
+        <p>Website interaktif untuk membantu pelajar memahami tata bahasa & kosakata dasar Jepang.</p>
+        <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Buka Proyek</div>
+    </a>
+</div>
+            <!-- PROYEK 2 -->
+            <div class="card clickable-card reveal" onclick="openModal('python-calc')">
+                <span class="card-badge">Python</span>
+                <i class="fa-solid fa-calculator main-icon"></i>
+                <h3>Kalkulator Sederhana</h3>
+                <p>Aplikasi kalkulator berbasis Python untuk perhitungan matematika dasar secara otomatis.</p>
+                <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Klik untuk detail</div>
+            </div>
+
+            <!-- PROYEK 3 -->
+            <div class="card clickable-card reveal" onclick="openModal('snake-game')">
+                <span class="card-badge">Game Dev</span>
+                <i class="fa-solid fa-gamepad main-icon"></i>
+                <h3>Game Ular (Snake Game)</h3>
+                <p>Game klasik ular menggunakan logika pemrograman JavaScript & algoritma game loop.</p>
+                <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Klik untuk detail</div>
+            </div>
+
+            <!-- PROYEK 4 (PRESENTASI ORGANISASI & PUBLIC SPEAKING) -->
+            <div class="card clickable-card reveal" onclick="openModal('presentation-osis')">
+                <span class="card-badge">Presentasi</span>
+                <i class="fa-solid fa-person-chalkboard main-icon"></i>
+                <h3>Presentasi Leadership & OSIS</h3>
+                <p>Materi presentasi dan public speaking saat menjadi pengurus OSIS periode 2024–2025.</p>
+                <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Klik untuk detail</div>
+            </div>
+
+            <!-- PROYEK 5 -->
+            <div class="card clickable-card reveal" onclick="openModal('competitions')">
+                <span class="card-badge">Prestasi</span>
+                <i class="fa-solid fa-trophy main-icon"></i>
+                <h3>Rekapitulasi Kejuaraan Lomba</h3>
+                <p>Dokumentasi berbagai perlombaan akademik & non-akademik yang berhasil dijuarai.</p>
+                <div class="click-hint"><i class="fa-solid fa-arrow-right-long"></i> Klik untuk detail</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SOSIAL MEDIA -->
+    <section id="socials">
+        <h2 class="section-title reveal">Mari Terhubung</h2>
+        <p style="text-align: center; color: var(--text-secondary); margin-bottom: 30px;" class="reveal">
+            Ikuti perjalanan dan aktivitas harian saya di media sosial berikut:
+        </p>
+        <div class="social-container reveal">
+            <!-- SILAKAN ISI LINK SOSMED ANDA DI BAWAH -->
+            <a href="https://www.instagram.com/kaishi014?igsh=MjM0cWFkNDhwYmhk" target="_blank" class="social-btn instagram">
+                <i class="fa-brands fa-instagram"></i> Instagram
+            </a>
+            <a href="https://discord.gg/warnet" target="_blank" class="social-btn discord">
+                <i class="fa-brands fa-discord"></i> Discord
+            </a>
+            <a href="https://whatsapp.com/channel/0029VbCzsgDHLHQQJesW7M3b" target="_blank" class="social-btn whatsapp">
+                <i class="fa-brands fa-whatsapp"></i> Saluran WA
+            </a>
+            <a href="https://youtube.com/@HIKARI" target="_blank" class="social-btn youtube">
+                <i class="fa-brands fa-youtube"></i> YouTube
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <p>&copy; 2026 Arraffi Ardhiansyah. Dibuat dengan semangat eksplorasi.</p>
+    </footer>
+
+    <!-- JENDELA POPUP (MODAL CONTAINER) -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOnOuterClick(event)">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div class="modal-header">
+                <i id="modalIcon" class="fa-solid fa-laptop-code"></i>
+                <div class="modal-title">
+                    <h3 id="modalTitle">Judul Proyek</h3>
+                    <span id="modalCategory">Kategori</span>
+                </div>
+            </div>
+            <div class="modal-body">
+                <p id="modalDescription">Deskripsi rinci mengenai proyek akan tampil di sini...</p>
+                
+                <div class="modal-features-title">Fitur & Sorotan Utama:</div>
+                <ul class="modal-features" id="modalFeatures">
+                    <!-- Ditambahkan otomatis lewat JS -->
+                </ul>
+
+                <div class="modal-features-title">Teknologi / Skill Digunakan:</div>
+                <div class="tech-tags" id="modalTech">
+                    <!-- Ditambahkan otomatis lewat JS -->
+                </div>
+
+                <div class="modal-actions">
+                    <a id="modalActionBtn" href="prprojek.html" target="_blank" class="btn" style="padding: 8px 20px; font-size: 0.9rem;">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Link Proyek
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT UNTUK INTERAKSI & MODAL POPUP -->
+    <script>
+        // DATA LENGKAP PROYEK & PRESENTASI
+        const projectData = {
+            'jepang': {
+                icon: 'fa-solid fa-language',
+                title: 'Web Belajar Bahasa Jepang',
+                category: 'Web Application',
+                description: 'Website interaktif yang dirancang untuk mempermudah teman-teman pelajar dalam menghafal Hiragana, Katakana, serta kosakata bahasa Jepang sehari-hari secara menyenangkan.',
+                features: [
+                    'Fitur kartu kilat (Flashcards) interaktif',
+                    'Kuis latihan kosakata sederhana',
+                    'Desain antarmuka bersih & responsif di smartphone'
+                ],
+                tech: ['HTML5', 'CSS3', 'JavaScript'],
+                link: 'projek.html'
+            },
+            'python-calc': {
+                icon: 'fa-solid fa-calculator',
+                title: 'Kalkulator Sederhana Python',
+                category: 'Python Desktop / CLI',
+                description: 'Aplikasi perhitungan berbasis logika Python yang mampu mengeksekusi operasi matematika dasar hingga lanjutan dengan cepat dan akurat.',
+                features: [
+                    'Operasi matematika dasar (+, -, *, /)',
+                    'Fitur penanganan error jika pembagian nol',
+                    'Sistem logika fungsi Python terstruktur'
+                ],
+                tech: ['Python 3', 'Logic & Algorithm'],
+                link: '#'
+            },
+            'snake-game': {
+                icon: 'fa-solid fa-gamepad',
+                title: 'Game Ular Classic (Snake Game)',
+                category: 'Game Development',
+                description: 'Pengembangan game retro klasik ular yang dibuat menggunakan HTML5 Canvas dan JavaScript untuk melatih logika collision detection dan game loop.',
+                features: [
+                    'Kontrol pergerakan responsif',
+                    'Penghitung skor real-time & rekor tertinggi',
+                    'Efek kecepatan ular meningkat seiring waktu'
+                ],
+                tech: ['HTML5 Canvas', 'CSS3', 'JavaScript Logic'],
+                link: '#'
+            },
+            'presentation-osis': {
+                icon: 'fa-solid fa-person-chalkboard',
+                title: 'Presentasi Leadership & OSIS',
+                category: 'Public Speaking & Presentation',
+                description: 'Materi presentasi program kerja dan kepemimpinan yang dibawakan saat menjabat sebagai pengurus OSIS periode 2024–2025.',
+                features: [
+                    'Penyusunan slide visual yang terstruktur',
+                    'Penyampaian gagasan program kerja unggulan',
+                    'Peningkatan keterlibatan audiens dalam sesi tanya jawab'
+                ],
+                tech: ['Public Speaking', 'Leadership', 'Canva / PPT', 'Communication'],
+                link: '#'
+            },
+            'competitions': {
+                icon: 'fa-solid fa-trophy',
+                title: 'Juara & Prestasi Lomba',
+                category: 'Achievements',
+                description: 'Pengalaman bertanding dan memenangkan berbagai kompetisi baik bidang akademik, keorganisasian, maupun olahraga/seni.',
+                features: [
+                    'Pengalaman bertanding di tingkat sekolah dan daerah',
+                    'Penerapan disiplin latihan dari Pencak Silat & Marching Band',
+                    'Kerja sama tim yang solid saat berorientasi kompetisi'
+                ],
+                tech: ['Mental Juara', 'Disiplin', 'Kerja Sama Tim'],
+                link: '#'
+            }
+        };
+
+        // FUNGSI MEMBUKA MODAL
+        function openModal(projectId) {
+            const data = projectData[projectId];
+            if (!data) return;
+
+            document.getElementById('modalIcon').className = data.icon;
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalCategory').innerText = data.category;
+            document.getElementById('modalDescription').innerText = data.description;
+
+            // Render Fitur
+            const featuresContainer = document.getElementById('modalFeatures');
+            featuresContainer.innerHTML = '';
+            data.features.forEach(ft => {
+                const li = document.createElement('li');
+                li.innerText = ft;
+                featuresContainer.appendChild(li);
+            });
+
+            // Render Tech Tags
+            const techContainer = document.getElementById('modalTech');
+            techContainer.innerHTML = '';
+            data.tech.forEach(t => {
+                const span = document.createElement('span');
+                span.className = 'tech-tag';
+                span.innerText = t;
+                techContainer.appendChild(span);
+            });
+
+            // Link Action Button
+            const actionBtn = document.getElementById('modalActionBtn');
+            actionBtn.href = data.link;
+
+            // Tampilkan Overlay Modal
+            document.getElementById('modalOverlay').classList.add('active');
+            document.body.style.overflow = 'hidden'; // Matikan scroll latar belakang
+        }
+
+        // FUNGSI MENUTUP MODAL
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = 'auto'; // Aktifkan scroll kembali
+        }
+
+        function closeModalOnOuterClick(event) {
+            if (event.target.id === 'modalOverlay') {
+                closeModal();
+            }
+        }
+
+        // ANIMASI SCROLL (FADE IN)
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+
+        window.addEventListener("scroll", reveal);
+        reveal();
+    </script>
+</body>
+</html>
