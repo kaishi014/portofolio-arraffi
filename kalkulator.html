@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Cerdas</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .calculator-container {
+      background: #1e293b;
+      border-radius: 20px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 400px;
+      overflow: hidden;
+      border: 1px solid #334155;
+    }
+
+    .display-screen {
+      background: #0f172a;
+      padding: 20px;
+      text-align: right;
+      word-wrap: break-word;
+      word-break: break-all;
+    }
+
+    .previous-operand {
+      color: #94a3b8;
+      font-size: 0.9rem;
+      min-height: 1.2rem;
+      margin-bottom: 5px;
+    }
+
+    .current-operand {
+      color: #38bdf8;
+      font-size: 2.2rem;
+      font-weight: bold;
+      min-height: 2.8rem;
+    }
+
+    .smart-feedback {
+      background: #334155;
+      padding: 8px 15px;
+      font-size: 0.85rem;
+      color: #f1f5f9;
+      text-align: center;
+      min-height: 35px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-bottom: 1px solid #475569;
+    }
+
+    .buttons-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 20px;
+    }
+
+    button {
+      border: none;
+      outline: none;
+      padding: 16px;
+      font-size: 1.2rem;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      background: #334155;
+      color: #f8fafc;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    button:hover {
+      background: #475569;
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .btn-operator {
+      background: #0284c7;
+      color: white;
+    }
+    .btn-operator:hover { background: #0369a1; }
+
+    .btn-action {
+      background: #ef4444;
+      color: white;
+    }
+    .btn-action:hover { background: #dc2626; }
+
+    .btn-equal {
+      background: #10b981;
+      color: white;
+      grid-column: span 2;
+    }
+    .btn-equal:hover { background: #059669; }
+
+    .history-panel {
+      padding: 15px 20px;
+      background: #0f172a;
+      border-top: 1px solid #334155;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .history-title {
+      font-size: 0.8rem;
+      color: #64748b;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .history-list {
+      list-style: none;
+      font-size: 0.85rem;
+      color: #cbd5e1;
+    }
+
+    .history-item {
+      margin-bottom: 4px;
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-container">
+    <!-- Layar Tampilan -->
+    <div class="display-screen">
+      <div id="previous-operand" class="previous-operand"></div>
+      <div id="current-operand" class="current-operand">0</div>
+    </div>
+
+    <!-- Pesan / Asisten Cerdas -->
+    <div id="smart-feedback" class="smart-feedback">
+      💡 Siap menghitung!
+    </div>
+
+    <!-- Tombol Kalkulator -->
+    <div class="buttons-grid">
+      <button class="btn-action" onclick="clearAll()">AC</button>
+      <button class="btn-action" onclick="deleteNumber()">DEL</button>
+      <button class="btn-operator" onclick="appendOperator('x²')">x²</button>
+      <button class="btn-operator" onclick="appendOperator('/')">÷</button>
+
+      <button onclick="appendNumber('7')">7</button>
+      <button onclick="appendNumber('8')">8</button>
+      <button onclick="appendNumber('9')">9</button>
+      <button class="btn-operator" onclick="appendOperator('*')">×</button>
+
+      <button onclick="appendNumber('4')">4</button>
+      <button onclick="appendNumber('5')">5</button>
+      <button onclick="appendNumber('6')">6</button>
+      <button class="btn-operator" onclick="appendOperator('-')">-</button>
+
+      <button onclick="appendNumber('1')">1</button>
+      <button onclick="appendNumber('2')">2</button>
+      <button onclick="appendNumber('3')">3</button>
+      <button class="btn-operator" onclick="appendOperator('+')">+</button>
+
+      <button onclick="appendNumber('0')">0</button>
+      <button onclick="appendNumber('.')">.</button>
+      <button class="btn-equal" onclick="calculate()">=</button>
+    </div>
+
+    <!-- Riwayat Perhitungan -->
+    <div class="history-panel">
+      <div class="history-title">Riwayat Perhitungan</div>
+      <ul id="history-list" class="history-list">
+        <!-- Riwayat akan muncul di sini -->
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let currentInput = '0';
+    let previousInput = '';
+    let operator = null;
+
+    const currentDisplay = document.getElementById('current-operand');
+    const previousDisplay = document.getElementById('previous-operand');
+    const feedback = document.getElementById('smart-feedback');
+    const historyList = document.getElementById('history-list');
+
+    function updateDisplay() {
+      currentDisplay.innerText = currentInput;
+      if (operator != null) {
+        previousDisplay.innerText = `${previousInput} ${operator}`;
+      } else {
+        previousDisplay.innerText = '';
+      }
+    }
+
+    function appendNumber(number) {
+      if (number === '.' && currentInput.includes('.')) return;
+      if (currentInput === '0' && number !== '.') {
+        currentInput = number;
+      } else {
+        currentInput += number;
+      }
+      updateDisplay();
+    }
+
+    function appendOperator(op) {
+      if (op === 'x²') {
+        const val = parseFloat(currentInput);
+        if (isNaN(val)) return;
+        const result = val * val;
+        addHistory(`${val}²`, result);
+        feedback.innerText = `💡 Kuadrat dari ${val} adalah ${result}`;
+        currentInput = result.toString();
+        updateDisplay();
+        return;
+      }
+
+      if (currentInput === '') return;
+      if (previousInput !== '') {
+        calculate();
+      }
+      operator = op;
+      previousInput = currentInput;
+      currentInput = '';
+      updateDisplay();
+    }
+
+    function calculate() {
+      let computation;
+      const prev = parseFloat(previousInput);
+      const current = parseFloat(currentInput);
+
+      if (isNaN(prev) || isNaN(current)) return;
+
+      // Fitur Cerdas: Peringatan Pembagian dengan Nol
+      if (operator === '/' && current === 0) {
+        feedback.innerText = '⚠️ Angka tidak bisa dibagi dengan 0!';
+        return;
+      }
+
+      switch (operator) {
+        case '+': computation = prev + current; break;
+        case '-': computation = prev - current; break;
+        case '*': computation = prev * current; break;
+        case '/': computation = prev / current; break;
+        default: return;
+      }
+
+      const expression = `${prev} ${operator === '*' ? '×' : operator === '/' ? '÷' : operator} ${current}`;
+      
+      // Catat ke Riwayat
+      addHistory(expression, computation);
+      
+      // Feedback Cerdas
+      feedback.innerText = `✅ Hasil: ${computation}`;
+
+      currentInput = computation.toString();
+      operator = null;
+      previousInput = '';
+      updateDisplay();
+    }
+
+    function clearAll() {
+      currentInput = '0';
+      previousInput = '';
+      operator = null;
+      feedback.innerText = '💡 Kalkulator dibersihkan';
+      updateDisplay();
+    }
+
+    function deleteNumber() {
+      if (currentInput.length === 1) {
+        currentInput = '0';
+      } else {
+        currentInput = currentInput.slice(0, -1);
+      }
+      updateDisplay();
+    }
+
+    function addHistory(expression, result) {
+      const li = document.createElement('li');
+      li.className = 'history-item';
+      li.innerHTML = `<span>${expression}</span> <strong>= ${result}</strong>`;
+      historyList.prepend(li);
+
+      // Batasi riwayat maksimal 5 items
+      if (historyList.children.length > 5) {
+        historyList.removeChild(historyList.lastChild);
+      }
+    }
+  </script>
+</body>
+</html>
