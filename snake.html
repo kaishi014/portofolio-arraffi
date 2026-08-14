@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game Pro - Cyber Neon</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background: #0f172a;
+      color: #f8fafc;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      color: #38bdf8;
+      text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+      letter-spacing: 2px;
+    }
+
+    .scoreboard {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      background: #1e293b;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      border: 1px solid #334155;
+    }
+
+    .score-box {
+      text-align: center;
+    }
+
+    .score-box span {
+      display: block;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      text-transform: uppercase;
+    }
+
+    .score-box strong {
+      font-size: 1.5rem;
+      color: #facc15;
+    }
+
+    .game-area {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(56, 189, 248, 0.25);
+      border: 2px solid #38bdf8;
+    }
+
+    canvas {
+      background: #020617;
+      display: block;
+    }
+
+    /* Overlay Screens */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(2, 6, 23, 0.88);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      backdrop-filter: blur(4px);
+    }
+
+    .overlay h2 {
+      font-size: 2rem;
+      color: #ef4444;
+      text-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
+    }
+
+    .overlay p {
+      color: #cbd5e1;
+      font-size: 1.1rem;
+    }
+
+    /* Controls & Settings */
+    .controls-panel {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    select, button {
+      background: #1e293b;
+      color: #f8fafc;
+      border: 1px solid #475569;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    select:hover, button:hover {
+      background: #334155;
+      border-color: #38bdf8;
+    }
+
+    button.primary {
+      background: #0284c7;
+      border-color: #38bdf8;
+    }
+
+    button.primary:hover {
+      background: #0369a1;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.4);
+    }
+
+    .toggle-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #1e293b;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #475569;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    .toggle-btn input {
+      accent-color: #38bdf8;
+      cursor: pointer;
+    }
+
+    /* Mobile On-Screen D-Pad */
+    .dpad {
+      display: grid;
+      grid-template-columns: repeat(3, 50px);
+      grid-template-rows: repeat(3, 50px);
+      gap: 6px;
+      margin-top: 15px;
+    }
+
+    .dpad button {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      border-radius: 10px;
+      background: #1e293b;
+    }
+
+    #btn-up { grid-column: 2; grid-row: 1; }
+    #btn-left { grid-column: 1; grid-row: 2; }
+    #btn-right { grid-column: 3; grid-row: 2; }
+    #btn-down { grid-column: 2; grid-row: 3; }
+
+    @media (min-width: 768px) {
+      .dpad { display: none; } /* Sembunyikan D-pad di Desktop */
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>SNAKE PRO</h1>
+    </header>
+
+    <div class="scoreboard">
+      <div class="score-box">
+        <span>Skor</span>
+        <strong id="score">0</strong>
+      </div>
+      <div class="score-box">
+        <span>High Score</span>
+        <strong id="high-score">0</strong>
+      </div>
+      <div class="score-box">
+        <span>Kecepatan</span>
+        <strong id="speed-display">1x</strong>
+      </div>
+    </div>
+
+    <div class="game-area">
+      <canvas id="gameCanvas" width="400" height="400"></canvas>
+
+      <!-- Start / Game Over Screen -->
+      <div id="overlay" class="overlay">
+        <h2 id="overlay-title">SNAKE GAME</h2>
+        <p id="overlay-desc">Tekan tombol Mulai untuk bermain</p>
+        <button id="start-btn" class="primary">Mulai Permainan</button>
+      </div>
+    </div>
+
+    <div class="controls-panel">
+      <select id="difficulty">
+        <option value="120">Lambat (Easy)</option>
+        <option value="80" selected>Normal (Medium)</option>
+        <option value="50">Cepat (Hard)</option>
+      </select>
+
+      <label class="toggle-btn">
+        <input type="checkbox" id="wall-pass"> Tembus Dinding
+      </label>
+
+      <button id="pause-btn">Pause (Space)</button>
+    </div>
+
+    <!-- Mobile Virtual D-Pad -->
+    <div class="dpad">
+      <button id="btn-up">⬆️</button>
+      <button id="btn-left">⬅️</button>
+      <button id="btn-right">➡️</button>
+      <button id="btn-down">⬇️</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // UI Elements
+    const scoreEl = document.getElementById('score');
+    const highScoreEl = document.getElementById('high-score');
+    const speedDisplayEl = document.getElementById('speed-display');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlay-title');
+    const overlayDesc = document.getElementById('overlay-desc');
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const difficultySelect = document.getElementById('difficulty');
+    const wallPassToggle = document.getElementById('wall-pass');
+
+    // Game Config
+    const gridSize = 20;
+    const tileCount = canvas.width / gridSize;
+    
+    let snake = [];
+    let dx = gridSize;
+    let dy = 0;
+    let nextDx = gridSize;
+    let nextDy = 0;
+
+    let food = { x: 0, y: 0, type: 'normal' };
+    let bonusFood = null;
+    let bonusTimer = null;
+
+    let score = 0;
+    let highScore = localStorage.getItem('snake_high_score') || 0;
+    highScoreEl.textContent = highScore;
+
+    let gameLoop = null;
+    let gameSpeed = 80;
+    let isPaused = false;
+    let isRunning = false;
+
+    // Web Audio API Synthesizer (Efek Suara Murni tanpa Audio File)
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'eat') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(300, now);
+        osc.frequency.exponentialRampToValueAtTime(600, now + 0.1);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      } else if (type === 'bonus') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(500, now);
+        osc.frequency.exponentialRampToValueAtTime(900, now + 0.2);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+        osc.start(now);
+        osc.stop(now + 0.2);
+      } else if (type === 'gameover') {
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(220, now);
+        osc.frequency.exponentialRampToValueAtTime(80, now + 0.4);
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+    }
+
+    // Initialize Game State
+    function initGame() {
+      snake = [
+        { x: 160, y: 200 },
+        { x: 140, y: 200 },
+        { x: 120, y: 200 }
+      ];
+      dx = gridSize;
+      dy = 0;
+      nextDx = gridSize;
+      nextDy = 0;
+      score = 0;
+      scoreEl.textContent = score;
+
+      gameSpeed = parseInt(difficultySelect.value);
+      updateSpeedLabel();
+
+      spawnFood();
+      clearBonusFood();
+
+      isRunning = true;
+      isPaused = false;
+      pauseBtn.textContent = 'Pause (Space)';
+      overlay.style.display = 'none';
+
+      if (gameLoop) clearInterval(gameLoop);
+      gameLoop = setInterval(update, gameSpeed);
+    }
+
+    function updateSpeedLabel() {
+      const base = parseInt(difficultySelect.value);
+      const multiplier = (120 / gameSpeed).toFixed(1);
+      speedDisplayEl.textContent = multiplier + 'x';
+    }
+
+    function spawnFood() {
+      food.x = Math.floor(Math.random() * tileCount) * gridSize;
+      food.y = Math.floor(Math.random() * tileCount) * gridSize;
+      
+      // Pastikan makanan tidak muncul di tubuh ular
+      snake.forEach(segment => {
+        if (segment.x === food.x && segment.y === food.y) spawnFood();
+      });
+
+      // Peluang 25% muncul makanan bonus
+      if (Math.random() < 0.25 && !bonusFood) {
+        spawnBonusFood();
+      }
+    }
+
+    function spawnBonusFood() {
+      const types = ['gold', 'freeze'];
+      const selectedType = types[Math.floor(Math.random() * types.length)];
+      
+      bonusFood = {
+        x: Math.floor(Math.random() * tileCount) * gridSize,
+        y: Math.floor(Math.random() * tileCount) * gridSize,
+        type: selectedType
+      };
+
+      // Hilangkan bonus setelah 6 detik
+      if (bonusTimer) clearTimeout(bonusTimer);
+      bonusTimer = setTimeout(() => {
+        bonusFood = null;
+      }, 6000);
+    }
+
+    function clearBonusFood() {
+      bonusFood = null;
+      if (bonusTimer) clearTimeout(bonusTimer);
+    }
+
+    function update() {
+      if (isPaused) return;
+
+      // Terapkan arah baru
+      dx = nextDx;
+      dy = nextDy;
+
+      // Hitung posisi kepala baru
+      const head = { x: snake[0].x + dx, y: snake[0].y + dy };
+
+      // Cek Tabrakan Dinding
+      const wallPass = wallPassToggle.checked;
+      if (wallPass) {
+        if (head.x < 0) head.x = canvas.width - gridSize;
+        if (head.x >= canvas.width) head.x = 0;
+        if (head.y < 0) head.y = canvas.height - gridSize;
+        if (head.y >= canvas.height) head.y = 0;
+      } else {
+        if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+          return gameOver();
+        }
+      }
+
+      // Cek Tabrakan dengan Diri Sendiri
+      for (let i = 0; i < snake.length; i++) {
+        if (head.x === snake[i].x && head.y === snake[i].y) {
+          return gameOver();
+        }
+      }
+
+      snake.unshift(head);
+
+      // Cek Makan Normal Food
+      if (head.x === food.x && head.y === food.y) {
+        score += 10;
+        scoreEl.textContent = score;
+        playSound('eat');
+        spawnFood();
+
+        // Percepat game secara bertahap setiap 50 poin
+        if (score % 50 === 0 && gameSpeed > 30) {
+          gameSpeed -= 4;
+          clearInterval(gameLoop);
+          gameLoop = setInterval(update, gameSpeed);
+          updateSpeedLabel();
+        }
+      } 
+      // Cek Makan Bonus Food
+      else if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
+        if (bonusFood.type === 'gold') {
+          score += 30;
+          playSound('bonus');
+        } else if (bonusFood.type === 'freeze') {
+          score += 15;
+          gameSpeed += 15; // Melambatkan ular sementara
+          clearInterval(gameLoop);
+          gameLoop = setInterval(update, gameSpeed);
+          updateSpeedLabel();
+          playSound('bonus');
+        }
+        scoreEl.textContent = score;
+        clearBonusFood();
+      } else {
+        snake.pop(); // Hapus ekor jika tidak makan
+      }
+
+      // Update High Score
+      if (score > highScore) {
+        highScore = score;
+        highScoreEl.textContent = highScore;
+        localStorage.setItem('snake_high_score', highScore);
+      }
+
+      draw();
+    }
+
+    function draw() {
+      // Clear Canvas
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Draw Grid Line Tipis
+      ctx.strokeStyle = '#0f172a';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < canvas.width; i += gridSize) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height);
+        ctx.moveTo(0, i); ctx.lineTo(canvas.width, i);
+        ctx.stroke();
+      }
+
+      // Draw Normal Food (Merah Neon)
+      ctx.fillStyle = '#ef4444';
+      ctx.shadowColor = '#ef4444';
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.arc(food.x + gridSize / 2, food.y + gridSize / 2, gridSize / 2 - 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Draw Bonus Food
+      if (bonusFood) {
+        ctx.fillStyle = bonusFood.type === 'gold' ? '#facc15' : '#38bdf8';
+        ctx.shadowColor = bonusFood.type === 'gold' ? '#facc15' : '#38bdf8';
+        ctx.shadowBlur = 15;
+        ctx.beginPath();
+        ctx.arc(bonusFood.x + gridSize / 2, bonusFood.y + gridSize / 2, gridSize / 2 - 1, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Draw Snake
+      snake.forEach((segment, index) => {
+        if (index === 0) {
+          // Kepala Ular
+          ctx.fillStyle = '#38bdf8';
+          ctx.shadowColor = '#38bdf8';
+          ctx.shadowBlur = 12;
+        } else {
+          // Badan Ular Gradient
+          ctx.fillStyle = '#0284c7';
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.fillRect(segment.x + 1, segment.y + 1, gridSize - 2, gridSize - 2);
+      });
+
+      // Reset Shadow Effect
+      ctx.shadowBlur = 0;
+    }
+
+    function gameOver() {
+      playSound('gameover');
+      isRunning = false;
+      clearInterval(gameLoop);
+
+      overlayTitle.textContent = "GAME OVER";
+      overlayDesc.textContent = `Skor Akhir Anda: ${score}`;
+      startBtn.textContent = "Main Lagi";
+      overlay.style.display = 'flex';
+    }
+
+    function togglePause() {
+      if (!isRunning) return;
+      isPaused = !isPaused;
+      if (isPaused) {
+        pauseBtn.textContent = 'Lanjutkan';
+        overlayTitle.textContent = 'PAUSED';
+        overlayDesc.textContent = 'Permainan Diberhentikan Sementara';
+        startBtn.textContent = 'Lanjutkan';
+        overlay.style.display = 'flex';
+      } else {
+        pauseBtn.textContent = 'Pause (Space)';
+        overlay.style.display = 'none';
+      }
+    }
+
+    // Input Handlers
+    function handleDirection(dir) {
+      if (dir === 'UP' && dy === 0) { nextDx = 0; nextDy = -gridSize; }
+      if (dir === 'DOWN' && dy === 0) { nextDx = 0; nextDy = gridSize; }
+      if (dir === 'LEFT' && dx === 0) { nextDx = -gridSize; nextDy = 0; }
+      if (dir === 'RIGHT' && dx === 0) { nextDx = gridSize; nextDy = 0; }
+    }
+
+    window.addEventListener('keydown', e => {
+      if (['ArrowUp', 'KeyW'].includes(e.code)) handleDirection('UP');
+      if (['ArrowDown', 'KeyS'].includes(e.code)) handleDirection('DOWN');
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) handleDirection('LEFT');
+      if (['ArrowRight', 'KeyD'].includes(e.code)) handleDirection('RIGHT');
+      if (e.code === 'Space') togglePause();
+    });
+
+    // D-Pad Touch Listeners
+    document.getElementById('btn-up').addEventListener('click', () => handleDirection('UP'));
+    document.getElementById('btn-down').addEventListener('click', () => handleDirection('DOWN'));
+    document.getElementById('btn-left').addEventListener('click', () => handleDirection('LEFT'));
+    document.getElementById('btn-right').addEventListener('click', () => handleDirection('RIGHT'));
+
+    // UI Buttons
+    startBtn.addEventListener('click', () => {
+      if (isPaused) {
+        togglePause();
+      } else {
+        initGame();
+      }
+    });
+
+    pauseBtn.addEventListener('click', togglePause);
+  </script>
+</body>
+</html>
